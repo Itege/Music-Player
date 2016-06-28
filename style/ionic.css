@@ -1,0 +1,57 @@
+#bottom-right, #showvis,#visualization{
+	display: none;
+}
+#bottom-right{
+	width: 50px;
+}
+#upload-button{
+	display: none;
+}
+#browser{
+	display: block !important;
+	height: calc(100% - 154px);
+}
+#transport{
+	white-space: nowrap;
+	right: 75px;
+	left: initial;
+	transform: translate(0,0);
+}
+#browser #songs{
+	margin-right: 15px;
+	width: calc((100% - 1px) / 3 - 15px);
+}
+@media screen and (orientation: portrait) {
+	html{
+		zoom: .75;
+	}
+	#browser {
+		width: calc(100% - 15px);
+		padding-left: 15px;
+		padding-right: 0px;
+	}
+	#browser .header{
+		font-size: 2rem;
+	}
+	#browser ul li{
+		font-size: 1.66rem;
+	}
+	#playlist{
+		bottom: 18px;
+	}
+	#songlist{
+		max-height: calc(100% - 102px);
+		overflow-x: hidden;
+		max-width: calc(100% - 7px);
+		bottom: 104px;
+	}
+	.metadata{
+		overflow: hidden;
+		font-size: 12px;
+	}
+}
+@media screen and (orientation: landscape) {
+	html{
+		zoom: .75;
+	}
+}

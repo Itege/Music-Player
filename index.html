@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>
+			Music Player
+		</title>
+		<link rel="shortcut icon" type="image/x-icon" href="http://music.t3gs.ninja/music_ico.ico">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link rel="stylesheet" href="style/material.blue_grey-indigo.min.css" /> 
+		<link rel="stylesheet" href="style/material.css" />
+		<link rel="stylesheet" href="style/upload.css" />
+		<script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+		<script language="javascript" src="scripts/lz-string.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="scripts/flint.js"></script> <!--Casualsuperman is credit to team-->
+		<meta name="viewport" content="user-scalable=no, width=device-width" />
+	</head>
+	<body>
+		<!--Tooltips-->
+			<div class="mdl-tooltip" for="generate">Generate a random playlist.</div>
+			<div class="mdl-tooltip" for="clear">Clear the current playlist.</div>
+			<div class="mdl-tooltip mdl-tooltip--top" for="showvis">Switch between the browser and visualiser.</div>
+			<div class="mdl-tooltip mdl-tooltip--top" for="songinfo">Click to view in browser.</div>
+			<div class="mdl-tooltip mdl-tooltip--top" for="shuffle">Shuffle the current playlist.</div>
+			<div class="mdl-tooltip mdl-tooltip--top" for="repeat">Toggle repeat.</div>
+			<div class="mdl-tooltip mdl-tooltip--top" for="voldown">Lower volume, shift click to mute.</div>
+			<div class="mdl-tooltip mdl-tooltip--top" for="volup">Increase volume.</div>
+			<div class="mdl-tooltip mdl-tooltip--top" for="playlist">View current playlist.</div>
+			<div class="mdl-tooltip" for="upload-button">View current playlist.</div>
+			<div class="mdl-tooltip mdl-tooltip" for="artists">Filter albums and songs by artist.</div>
+			<div class="mdl-tooltip mdl-tooltip" for="albums">Click to filter songs, double click to clear playlist and play now, right click to queue.</div>
+			<div class="mdl-tooltip mdl-tooltip" for="load-playlist">Code for the current playlist.</div>
+			
+		<!--End tooltips-->
+
+		<audio src="" id="player" controls style="margin-top: 50px;display: none"></audio>
+		<audio src="" id="preload" controls style="margin-top: 50px;display: none" preload="metadata"></audio>
+		<div id="upload-button" class="material-icons">backup</div>
+		<div id="songlist">
+				<input type="text" id="load-playlist"/>
+				<button id="generate" class="mdl-button mdl-button--raised mdl-js-button  mdl-button--colored">
+					Generate 
+				</button>
+				<button id="clear" class="mdl-button mdl-button--raised mdl-js-button  mdl-button--accent">
+					Clear All 
+				</button>
+			<ul>
+			</ul>
+		</div>
+		<canvas id = "visualization"></canvas>
+		<div id="browser">
+				<span class="header">Artists</span>
+				<span class="header">Albums</span>
+				<span class="header">Songs</span>
+				<ul id="artists"></ul>
+				<ul id="albums"></ul>
+				<ul id="songs"></ul>
+		</div>
+		<div id = "showvis" class="material-icons">music_video</div>
+		<div class="mdl-slider__container" id="progress-container">
+			<input class="mdl-slider mdl-js-slider is-upgraded" type="range" id="progressTracker" min="0" max="100" value="0" step="1" data-upgraded=",MaterialSlider" />
+			<div class="mdl-slider__background-flex" id="track-background">
+				<div id="tracklower" class="mdl-slider__background-lower"></div>
+				<div id="trackupper" class="mdl-slider__background-upper"></div>
+			</div>
+		</div>
+		<div id="songinfo">
+			<img id="coverArt" src="../images/blank.png" alt="Album Artwork"/>
+			<span id ="songtitle" class="metadata"></span><br/>
+			<span id ="artist" class="metadata"></span><br/>
+			<span id="album" class="metadata"></span>
+		</div>
+		<div id="transport">
+			<div id ="repeat" class="material-icons">repeat</div>
+			<div id ="previous" class="mdl-button mdl-js-button mdl-button--fab"><i class="material-icons">skip_previous</i></div>
+			<div id ="play" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored"><i class="material-icons">play_arrow</i></div>
+			<div id ="next" class="mdl-button mdl-js-button mdl-button--fab"><i class="material-icons">skip_next</i></div>
+			<div id ="shuffle" class="material-icons">shuffle</div>
+		</div>
+		<div id="bottom-right">
+			<i id="voldown" class="material-icons">volume_down</i>
+			<div class="mdl-slider__container" id="volume-container">
+				<input class="mdl-slider mdl-js-slider is-upgraded" type="range" id="volume" min="0" max="1" value="1" step="0.01" data-upgraded=",MaterialSlider" />
+				<div class="mdl-slider__background-flex">
+					<div id="vollower" class="mdl-slider__background-lower" style="flex: 1 1 0%;"></div>
+					<div id="volupper" class="mdl-slider__background-upper" style="flex: 0 1 0%;"></div>
+				</div>
+			</div>
+			<i id="volup" class="material-icons">volume_up</i>
+		</div>
+		<div id ="playlist" class="material-icons">queue_music</div>
+		<div id="upload-container">
+			<form name="form" id="form" method="post" action="upload.php" enctype="multipart/form-data">
+				<input type="file" name="upfile[]" id="upfile" class="file" accept=".mp3, .m4a" multiple>
+				<label for ="upfile" name="fileLable"><span class="material-icons">backup</span> Select songs to upload</label>
+				<input name="submit" type="submit" value="Upload Song(s)" id="submit">
+			</form>
+			<div id="close-upload" class="material-icons">clear</div>
+			<div id="file-display"></div>
+			<div id="prevent-click">
+				<div id="bar-container">
+					<div id="bar-fill"></div>
+				</div>	
+			</div>
+		</div>
+		<template id="track-templ">
+		    <li class="song">
+				<span class="listsong">{{songname}}</span>
+				<br/>
+				<span class="listartist">{{artist}} - {{album}}</span>
+			</li>
+		</template>
+		<template id="artist-templ">
+			<li class="anArtist">{{artist}}</li>
+		</template>
+		<template id="album-templ">
+			<li class="anAlbum"><img src="{{cover}}" alt="Album Artwork"/>{{album}}</li>
+		</template>
+		<template id="song-templ">
+			<li class="aSong">{{song}}</li>
+		</template>
+		<template id="fileTemp">
+			<div class="aFile">
+				<div class="file-icon">&#9835;</div>
+				<div class="name-plate">{{name}}</div>
+			</div>
+		</template>
+		<script src="scripts/color-thief.js"></script>
+		<script src="scripts/visualizer.js"></script>
+		<script src="scripts/controls.js"></script>
+		<script src="scripts/tracklist.js"></script>
+		<script src="scripts/upload.js"></script>
+	</body>
+</html>
